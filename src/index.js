@@ -1,36 +1,47 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import YTSearch from 'youtube-api-search'
+import debounce from 'lodash.debounce'
 
 import SearchBar from './components/search_bar'
 import VideoList from './components/video_list'
-<<<<<<< HEAD
-=======
 import VideoDetail from './components/video_detail'
->>>>>>> feature/app_shell
 
 class App extends Component {
   state = {
-    videos: []
+    videos: [],
   }
 
   componentWillMount = () => {
-    YTSearch({ key: API_KEY_YOUTUBE,  term: 'SJW' }, videos => {
-      this.setState({ videos })
+    this.onVideoSearch('SJW')
+  }
+
+  onVideoSearch = debounce((term) => {
+    YTSearch({ key: API_KEY_YOUTUBE,  term }, videos => {
+      this.setState({ 
+        videos,
+        selectedVideo: videos[0]
+      })
     })
+  }, 300)
+
+  setSelectedVideo = (selectedId, e) => {
+    const { videos } = this.state
+
+    const [ selectedVideo ] = videos
+      .filter(video  => video.id.videoId === selectedId )
+
+    this.setState({ selectedVideo })
   }
 
   render() {
-    const { videos } = this.state
+    const { state: { videos, selectedVideo }, setSelectedVideo, onVideoSearch } = this
 
     return (
       <div>
-        <SearchBar />
-        <VideoList videos={videos} />
-<<<<<<< HEAD
-=======
-        <VideoDetail video={videos[0]} />
->>>>>>> feature/app_shell
+        <SearchBar onSearchTermChange={(term) => onVideoSearch(term)} />
+        <VideoDetail video={selectedVideo} />
+        <VideoList videos={videos} onSelectVideo={setSelectedVideo} />
       </div>
     )
   }

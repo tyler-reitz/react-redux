@@ -1,18 +1,24 @@
 import React, { Component } from 'react'
+import throttle from 'lodash.throttle'
 
 class SearchBar extends Component {
   state = {
     term: ''
   }
 
+  onInputChange = (term) => {
+    this.setState({ term })
+    this.props.onSearchTermChange(term)
+  }
+
   render() {
-    const { term } = this.state
+    const { state: { term }, onInputChange } = this
 
     return (
-      <div>
+      <div className="search-bar">
         <input 
           value={term}
-          onChange={e => this.setState({ term: e.target.value })} 
+          onChange={(e) => onInputChange(e.target.value)} 
         />
       </div>
     )
